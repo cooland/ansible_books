@@ -15,6 +15,7 @@
      with_dict: "{{ etc_hosts }}"  
 
    - name: Replace a localhost entry searching for a literal string to avoid escaping
+     become: yes
      lineinfile:
        path: /etc/hosts
        regexp: '^{{ item.key }}'
