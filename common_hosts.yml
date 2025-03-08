@@ -1,0 +1,17 @@
+---
+ - hosts: all
+
+   vars:
+     etc_hosts:
+       '192.168.56.101': 'pg1 etcd1'
+       '192.168.56.102': 'pg2 etcd2'
+       '192.168.56.103': 'pg3 etcd3'
+       '192.168.56.104': 'ansible'
+   tasks:
+
+   - name: print variables
+     debug: 
+       mag: "key is {{ item.key }} and value is {{ item.value }}"
+     with_dict: "{{ etc_hosts }}"  
+
+
