@@ -23,5 +23,5 @@
        owner: root
        group: root
        mode: '0644'
-      with_dict: "{{ etc_hosts }}" 
+     with_dict: "{{ etc_hosts }}" 
 
