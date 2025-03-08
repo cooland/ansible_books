@@ -8,13 +8,14 @@
        '192.168.56.103': 'pg3 etcd3'
        '192.168.56.104': 'ansible'
    tasks:
+#debug
+#   - name: print variables
+#     debug: 
+#       msg: "key is {{ item.key }} and value is {{ item.value }}"
+#     with_dict: "{{ etc_hosts }}"  
 
-   - name: print variables
-     debug: 
-       msg: "key is {{ item.key }} and value is {{ item.value }}"
-     with_dict: "{{ etc_hosts }}"  
-
-   - name: Replace a localhost entry searching for a literal string to avoid escaping
+#we have no DNS, so make records in /etc/hosts
+   - name: Replace a /etc/hosts entry by needed values
      become: yes
      lineinfile:
        path: /etc/hosts
@@ -26,3 +27,26 @@
        mode: '0644'
      with_dict: "{{ etc_hosts }}" 
 
+#disable SELinux
+   - name: Disable SELinux
+     selinux:
+       state: disabled
+#set default state       
+   - name: Set default multi-user.target
+     command: "systemctl set-default multi-user.target"
+   
+#create ansible user and ssh key for it
+   - name: create ansible user and ssh key for it
+     user:
+       name: ansible
+       state: present
+       groups: 'wheel'
+       append: true
+       shell: /bin/bash
+   - name: set ssh keys
+     authorized_key:
+       user: ansible
+       state: present
+       key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDUdq/KRpBtDGzYgyjqxW03Jg4lHbzLEdoF6KQ6h/EdIyG4KJ5pZyI7SRFbD9yhMZtjB8aSLT+2bnwRkp2rGo+T9/XsWrczzsf+/09kEw6a816kzdSBhrbT+2BzDJ2Pw5ng4ibQQNJ3aGXK5XtP6Utr1ePwaJSb6J0gKZ7S7gdIOvR+Vn4BjwLnCJhhGxE72XDMoZxdyQGuF+vAuE6Rj2cS4wEuvnXpSfCD0Zz+wEtS4ZPtefdr0mVcE9uS8XP3hx0vCbxCIasRb5yl8EqBYXo6010Nt8JsXrutRW0PW37ijKL6hPuqmAUrxIQp4n0hjz5LZeZvd46YL2MixUi5VjbIT9CD5zuaXMwTBLCM3VMNB2shVbS3OhhlUyvcJb6uGG1ITRxafhwVzLOLB1Fz7uskC3QqGeZr9rjrQBYb3zb4Zljh777SSygCdoNb6QVfpB/ySa3hnTUAud4A9kiO5qR7IczcBdCPHtV7s4ZcJh6e9D157CaV6QlZI3qTP2WuKyxS/uuXlFoc/CNIOKlMXopbFPZc/7KQUk+Qq6rqTzYkYJ/BZhaMLQ7cVwrx6/Kl/DeYUjGvlVy9eFexegWgZlUiJNCW9IzCkb31BNolv5WSybsdYIwfixFkSH/A/YkObTNbelHc8Jo6zkmtArIgVX1hg2OrEwTJWWxKgFa/GcfLDQ== ansible@ansible"
+     ignore_errors: yes
+     
