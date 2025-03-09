@@ -1,7 +1,8 @@
 ---
  - hosts: all
-
+   become: yes 
    vars:
+     ansible_user: "dba"
      etc_hosts:
        '192.168.56.101': 'pg1 etcd1'
        '192.168.56.102': 'pg2 etcd2'
@@ -16,7 +17,6 @@
 
 #we have no DNS, so make records in /etc/hosts
    - name: Replace a /etc/hosts entry by needed values
-     become: yes
      lineinfile:
        path: /etc/hosts
        regexp: '^{{ item.key }}'
